@@ -1,6 +1,5 @@
-#cd ../../../
+cd ../../../
 app=`ls -1 | grep -e 'HubNet Client [.0-9]\+[ A-Za-z\-]*[0-9]*\.app'`
-ls
 
 if [ -z "${app// }" ]; then
     path=`pwd`
@@ -34,10 +33,10 @@ do
    fi
 done
 
-while ! ps -A | grep "HubNet Client" | grep "test$numClients"; do sleep 10; done
+osascript -e "display dialog \"Once all HubNet clients have launched, please click Connect.\" buttons {\"Connect\"}"
 
 for n in $(seq 1 $numClients)
 do
-   osascript -e "tell application \"System Events\"" -e "tell process \"HubNet\"" -e "try" -e "click button \"Enter\" of window 1" -e "end try -- ignore errors" -e "end tell" -e "end tell"
-   sleep 100
+   thePID=$(ps -ax | grep "HubNet Client" | grep "test$n$" | awk '{print $1}')
+   osascript -e "tell application \"System Events\"" -e "set frontmost of every process whose unix id is $thePID to true" -e "key code 36" -e "end tell"
 done
